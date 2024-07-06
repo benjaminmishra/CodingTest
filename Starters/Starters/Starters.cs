@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System;
 
 namespace Starters;
 
@@ -70,5 +69,16 @@ public static class Starters
         }
 
         return replicatedStringBuilder.ToString();
+    }
+
+    /// <summary>
+    /// Prints all odd numbers between 0 and 100 to the console
+    /// </summary>
+    public static void PrintOddNumberFromZeroToHundred()
+    {
+        for (int i = 1; i <= 100; i += 2)
+        {
+            Console.WriteLine(i);
+        }
     }
 }

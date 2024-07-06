@@ -2,6 +2,7 @@ namespace Starters.Tests;
 
 public class StarterTests
 {
+    #region Tests for IsNumber2Power
     [Theory]
     [InlineData(4)]
     [InlineData(16)]
@@ -31,6 +32,10 @@ public class StarterTests
 
         Assert.False(result);
     }
+
+    #endregion
+
+    #region Tests for ReverseString
 
     [Fact]
     public void ReverseString_NormalString_ReturnsReversedString()
@@ -109,7 +114,9 @@ public class StarterTests
 
         Assert.Equal("GfEdCbA", result);
     }
+    #endregion
 
+    #region Tests for ReplicateString
     [Fact]
     public void ReplicateString_EmptyStringZeroTimes_EmptyString()
     {
@@ -217,4 +224,68 @@ public class StarterTests
 
         Assert.Throws<ArgumentException>(() => Starters.ReplicateString(input, times));
     }
+
+    #endregion
+
+    #region Tests for PrintOddNumberFromZeroToHundred
+    [Fact]
+    public void PrintOddNumberFromZeroToHundred_FirstNumberIsOne()
+    {
+        var output = TestHelpers.CaptureConsoleOutput(Starters.PrintOddNumberFromZeroToHundred);
+
+        var firstNumber = output.Split(Environment.NewLine, StringSplitOptions.TrimEntries)[0];
+
+        Assert.Equal("1", firstNumber);
+    }
+
+    [Fact]
+    public void PrintOddNumberFromZeroToHundred_LastElementIs99()
+    {
+        var output = TestHelpers.CaptureConsoleOutput(Starters.PrintOddNumberFromZeroToHundred);
+
+        var lastNumber = output.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+
+        Assert.NotNull(lastNumber);
+        Assert.Equal("99", lastNumber);
+    }
+
+    [Fact]
+    public void PrintOddNumberFromZeroToHundred_ContainsCorrectNumberOfElements()
+    {
+        var output = TestHelpers.CaptureConsoleOutput(Starters.PrintOddNumberFromZeroToHundred);
+
+        var outputCount= output.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Length;
+
+        Assert.Equal(50, outputCount);
+    }
+
+    [Fact]
+    public void PrintOddNumberFromZeroToHundred_AllElementsAreOdd()
+    {
+        var output = TestHelpers.CaptureConsoleOutput(Starters.PrintOddNumberFromZeroToHundred);
+
+        var outputLines= output.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
+        Assert.NotEmpty(outputLines);
+        // check for all items in the list if they have a remainder after dividing by 2
+        Assert.All(
+            outputLines, 
+            x => Assert.True(int.Parse(x.Trim()) % 2 is not 0)
+        );
+    }
+
+    [Fact]
+    public void PrintOddNumberFromZeroToHundred_ContainsExpectedOddNumbers()
+    {
+        var output = TestHelpers.CaptureConsoleOutput(Starters.PrintOddNumberFromZeroToHundred);
+
+        var outputLines= output.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
+        Assert.NotEmpty(outputLines);
+        for (int i = 0; i < outputLines.Length; i++)
+        {
+            Assert.Equal((2 * i + 1).ToString(), outputLines[i].Trim());
+        }
+    }
+    #endregion
 }
