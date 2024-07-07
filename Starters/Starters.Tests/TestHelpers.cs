@@ -6,7 +6,7 @@ public static class TestHelpers
     {
         var output = new StringWriter { NewLine = Environment.NewLine };
         Console.SetOut(output);
-        action();
+        action.Invoke();
         return output.ToString();
     }
 }

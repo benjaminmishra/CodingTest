@@ -1,0 +1,50 @@
+services:
+  library-api:
+    build:
+      context: ./Library.API
+      dockerfile: Dockerfile
+    environment:
+      - LIBRARY_REPORTING_SERVICE_URL=library-reporting:50051
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - library-network
+    ports:
+      - "80:80"
+    depends_on:
+      - library-reporting
+    develop:
+      watch:
+        - path: ./src/Library.API/
+          action: rebuild
+
+  library-reporting:
+    build:
+      context: ./Library.Reporting
+      dockerfile: Dockerfile
+    environment:
+      - SQLSERVER_CONNECTION_STRING=Server=library-db;Database=LibraryDB;User Id=sa;Password=Your(5tr0ng)Password;
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:50051
+    networks:
+      - library-network
+    depends_on:
+      - library-db
+    develop:
+      watch:
+        - path: ./src/Library.Reporting/
+          action: rebuild
+
+  library-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD=Your(5tr0ng)Password
+      - ACCEPT_EULA=Y
+    networks:
+      - library-network
+    ports:
+      - "1433:1433"
+
+networks:
+  library-network:
+    driver: bridge
