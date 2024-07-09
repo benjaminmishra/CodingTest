@@ -1,7 +1,6 @@
 {
     "version": "0.2.0",
     "configurations": [
-
         {
             "name": ".NET Core Launch (web)",
             "type": "coreclr",
@@ -31,9 +30,13 @@
             "name": "Docker .NET Attach",
             "type": "docker",
             "request": "attach",
-            "preLaunchTask": "docker-run: debug",
             "platform": "netCore",
-            "containerName": "src-library-api-1",
+            "sourceFileMap": {
+                "/src/": "${workspaceFolder}/src/"
+            },
+            "netCore": {
+                "debuggerPath": "/remote_debugger/vsdbg"
+            }
         }
     ]
 }

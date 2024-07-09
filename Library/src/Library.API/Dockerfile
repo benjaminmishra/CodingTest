@@ -1,18 +1,21 @@
-# https://hub.docker.com/_/microsoft-dotnet
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /source
-
-# copy csproj and restore as distinct layers
-COPY ./Library.API.csproj ./Library.API/
-RUN dotnet restore ./Library.API/
-
-# copy everything else and build app
-COPY ./ ./Library.API/
-WORKDIR /source/Library.API/
-RUN dotnet publish -c release -o /app
-
-# final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-COPY --from=build /app ./
+
+USER app
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG configuration=Debug
+WORKDIR /src
+COPY ["./Library.API/Library.API.csproj", "./Library.API/"]
+RUN dotnet restore "./Library.API/Library.API.csproj"
+COPY . .
+WORKDIR "/src/Library.API"
+RUN dotnet build "Library.API.csproj" -c $configuration -o /app/build
+
+FROM build AS publish
+ARG configuration=Debug
+RUN dotnet publish "Library.API.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Library.API.dll"]

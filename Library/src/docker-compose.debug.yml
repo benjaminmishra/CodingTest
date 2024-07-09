@@ -2,8 +2,8 @@
 services:
   library-api:
     build:
-      context: ./Library.API
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./Library.API/Dockerfile
       args:
         - configuration=Debug
     environment:
@@ -18,15 +18,15 @@ services:
       - library-reporting
     develop:
       watch:
-        - path: ./src/Library.API/
+        - path: ./Library.API/
           action: rebuild
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
 
   library-reporting:
     build:
-      context: ./Library.Reporting
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./Library.Reporting/Dockerfile
       args:
         - configuration=Debug
     environment:
@@ -39,7 +39,7 @@ services:
       - library-db
     develop:
       watch:
-        - path: ./src/Library.Reporting/
+        - path: ./Library.Reporting/
           action: rebuild
     volumes:
       - ~/.vsdbg:/remote_debugger:rw

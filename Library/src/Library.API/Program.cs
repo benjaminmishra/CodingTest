@@ -16,4 +16,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.RegisterEndpoints();
+
 await app.RunAsync();
