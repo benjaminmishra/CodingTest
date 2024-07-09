@@ -26,11 +26,11 @@ services:
   library-reporting:
     build:
       context: .
-      dockerfile: ./Library.Reporting/Dockerfile
+      dockerfile: ./Library.ReportingService/Dockerfile
       args:
         - configuration=Debug
     environment:
-      - SQLSERVER_CONNECTION_STRING=Server=library-db;Database=LibraryDB;User Id=sa;Password=Your(5tr0ng)Password;
+      - Reporting__LibraryDbConnStr=Server=library-db;Database=LibraryDB;User Id=sa;Password=Your(5tr0ng)Password;
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:50051
     networks:
@@ -39,7 +39,7 @@ services:
       - library-db
     develop:
       watch:
-        - path: ./Library.Reporting/
+        - path: ./Library.ReportingService/
           action: rebuild
     volumes:
       - ~/.vsdbg:/remote_debugger:rw

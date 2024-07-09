@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EB8165D5-73D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.API", "src\Library.API\Library.API.csproj", "{21171FEE-0E8C-4868-89F2-B19FB9C0F6E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Reporting", "src\Library.Reporting\Library.Reporting.csproj", "{80BFE0EB-04DE-473B-9EC9-80CFFEA2033D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.ReportingService", "src\Library.ReportingService\Library.ReportingService.csproj", "{80BFE0EB-04DE-473B-9EC9-80CFFEA2033D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

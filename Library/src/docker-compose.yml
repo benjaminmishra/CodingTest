@@ -20,10 +20,10 @@ services:
 
   library-reporting:
     build:
-      context: ./Library.Reporting
+      context: ./Library.ReportingService
       dockerfile: Dockerfile
     environment:
-      - SQLSERVER_CONNECTION_STRING=Server=library-db;Database=LibraryDB;User Id=sa;Password=Your(5tr0ng)Password;
+      - Reporting__LibraryDbConnStr=Server=library-db;Database=LibraryDB;User Id=sa;Password=Your(5tr0ng)Password;
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:50051
     networks:
@@ -32,7 +32,7 @@ services:
       - library-db
     develop:
       watch:
-        - path: ./src/Library.Reporting/
+        - path: ./src/Library.ReportingService/
           action: rebuild
 
   library-db:
