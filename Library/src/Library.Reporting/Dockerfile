@@ -9,11 +9,11 @@ COPY ["./Library.Reporting/Library.Reporting.csproj", "./Library.Reporting/"]
 RUN dotnet restore "./Library.Reporting/Library.Reporting.csproj"
 COPY . .
 WORKDIR "/src/Library.Reporting"
-RUN dotnet build "Library.Reporting.csproj" -c $configuration -o /app/build
+RUN dotnet build "Library.Reporting.csproj" -c "$configuration" -o /app/build
 
 FROM build AS publish
 ARG configuration=Debug
-RUN dotnet publish "Library.Reporting.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Library.Reporting.csproj" -c "$configuration" -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
