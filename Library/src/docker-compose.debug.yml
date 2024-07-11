@@ -7,7 +7,7 @@ services:
       args:
         - configuration=Debug
     environment:
-      - LIBRARY_REPORTING_SERVICE_URL=library-reporting:50051
+      - Api__ReportingServiceUrl=library-reporting
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     networks:

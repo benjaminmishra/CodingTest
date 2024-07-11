@@ -4,7 +4,7 @@ services:
       context: ./Library.API
       dockerfile: Dockerfile
     environment:
-      - LIBRARY_REPORTING_SERVICE_URL=library-reporting:50051
+      - Api__ReportingServiceUrl=library-reporting
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     networks:
@@ -15,7 +15,7 @@ services:
       - library-reporting
     develop:
       watch:
-        - path: ./src/Library.API/
+        - path: ./Library.API/
           action: rebuild
 
   library-reporting:
@@ -23,7 +23,7 @@ services:
       context: ./Library.ReportingService
       dockerfile: Dockerfile
     environment:
-      - Reporting__LibraryDbConnStr=Server=library-db;Database=LibraryDB;User Id=sa;Password=Your(5tr0ng)Password;
+      - Reporting__LibraryDbConnStr=Server=library-db;Database=LibraryDB;Integrated security=false;User=sa;Password=Your(5tr0ng)Password;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:50051
     networks:
@@ -32,7 +32,7 @@ services:
       - library-db
     develop:
       watch:
-        - path: ./src/Library.ReportingService/
+        - path: ./Library.ReportingService/
           action: rebuild
 
   library-db:

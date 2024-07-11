@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Library.Reporting";
+option csharp_namespace = "Library.ReportingService";
 
 package greet;
 
