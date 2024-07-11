@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "Library.Reporting.Types.Protos";
+
+package reporting;
+
+service ReportingService {
+    rpc GetReport (GetReportRequest) returns (GetReportResponse);
+}
+
+message GetReportRequest {
+    string report_type = 1;
+    bytes data = 2;
+}
+
+message GetReportResponse {
+    bytes data = 1;
+    optional Error error = 2;
+}
+
+message Error {
+    string message = 1;
+    bool is_transient = 2;
+    optional Error inner_error = 3;
+}

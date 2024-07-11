@@ -20,7 +20,7 @@ services:
 
   library-reporting:
     build:
-      context: ./Library.ReportingService
+      context: ./Library.Reporting.Service
       dockerfile: Dockerfile
     environment:
       - Reporting__LibraryDbConnStr=Server=library-db;Database=LibraryDB;Integrated security=false;User=sa;Password=Your(5tr0ng)Password;TrustServerCertificate=True;
@@ -32,7 +32,7 @@ services:
       - library-db
     develop:
       watch:
-        - path: ./Library.ReportingService/
+        - path: ./Library.Reporting.Service/
           action: rebuild
 
   library-db:

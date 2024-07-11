@@ -26,7 +26,7 @@ services:
   library-reporting:
     build:
       context: .
-      dockerfile: ./Library.ReportingService/Dockerfile
+      dockerfile: ./Library.Reporting.Service/Dockerfile
       args:
         - configuration=Debug
     environment:
@@ -39,7 +39,7 @@ services:
       - library-db
     develop:
       watch:
-        - path: ./Library.ReportingService/
+        - path: ./Library.Reporting.Service/
           action: rebuild
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
