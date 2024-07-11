@@ -4,6 +4,7 @@ using Library.ReportingService.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Library.ReportingService.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240710225752_BorrowerIdClumFix")]
+    partial class BorrowerIdClumFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,18 +71,21 @@ namespace Library.ReportingService.Migrations
                     b.Property<Guid>("BorrowerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("BorrowerId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("ReturnedDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"));
-
                     b.HasIndex("BookId");
 
                     b.HasIndex("BorrowerId");
 
-                    b.ToTable("BorrowedBooks", (string)null);
+                    b.HasIndex("BorrowerId1");
+
+                    b.ToTable("BorrowedBooks");
                 });
 
             modelBuilder.Entity("Library.ReportingService.Models.Borrower", b =>
@@ -108,10 +114,14 @@ namespace Library.ReportingService.Migrations
                         .IsRequired();
 
                     b.HasOne("Library.ReportingService.Models.Borrower", "Borrower")
-                        .WithMany("BorrowedBooks")
+                        .WithMany()
                         .HasForeignKey("BorrowerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Library.ReportingService.Models.Borrower", null)
+                        .WithMany("BorrowedBooks")
+                        .HasForeignKey("BorrowerId1");
 
                     b.Navigation("Book");
 

@@ -19,7 +19,7 @@ public class LibraryDbContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new BookEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new BorrowerEntityTypeConfiguration());
-
+        modelBuilder.ApplyConfiguration(new BorrowedBookEntityTypeConfiguration());
     }
 
 }
