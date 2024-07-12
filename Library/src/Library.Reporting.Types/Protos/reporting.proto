@@ -4,22 +4,44 @@ option csharp_namespace = "Library.Reporting.Types.Protos";
 
 package reporting;
 
+enum ReportTypes {
+    MostBorrowedBooks = 0;
+}
+
 service ReportingService {
     rpc GetReport (GetReportRequest) returns (GetReportResponse);
 }
 
 message GetReportRequest {
-    string report_type = 1;
-    bytes data = 2;
+    ReportTypes report_type = 1;
+    oneof data {
+        MostBorrowedBooksRequest most_borrowed_books_request = 2;
+    }
 }
 
 message GetReportResponse {
-    bytes data = 1;
+    oneof data {
+        MostBorrowedBooksResponse most_borrowed_books_reponse = 1;
+    }
     optional Error error = 2;
 }
 
+message MostBorrowedBooksRequest {
+    int32 count = 1;
+}
+
+message MostBorrowedBooksResponse {
+    repeated MostBorrowedBook MostBorrowedBooks = 1;
+}
+
+message MostBorrowedBook {
+    string Title = 1;
+    string ISBN = 2;
+    string Author = 3;
+    int32 CopiesBorrowed = 4;
+}
+
 message Error {
-    string message = 1;
-    bool is_transient = 2;
-    optional Error inner_error = 3;
+    optional string message = 1;
+    optional Error inner_error = 2;
 }

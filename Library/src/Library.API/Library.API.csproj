@@ -18,6 +18,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Library.Reporting.Types\Library.Reporting.Types.csproj" />
-    <Protobuf Include="..\Library.Reporting.Types\Protos\reporting.proto" GrpcService="Client" />
+    <Protobuf Include="..\Library.Reporting.Types\Protos\reporting.proto" GrpcService="Client" Access="internal" />
   </ItemGroup>
 </Project>
