@@ -1,6 +1,6 @@
-@HostAddress = http://localhost:5079
+@HostAddress = http://localhost:80
 
-GET {{HostAddress}}/weatherforecast/
+GET {{HostAddress}}/Reports/MostBorrowedBooks/5
 Accept: application/json
 
 ###

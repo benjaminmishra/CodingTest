@@ -4,7 +4,7 @@ services:
       context: ./Library.API
       dockerfile: Dockerfile
     environment:
-      - Api__ReportingServiceUrl=library-reporting
+      - Api__ReportingServiceUrl=library-reporting:50051
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     networks:

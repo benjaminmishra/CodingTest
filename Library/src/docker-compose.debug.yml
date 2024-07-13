@@ -7,7 +7,7 @@ services:
       args:
         - configuration=Debug
     environment:
-      - Api__ReportingServiceUrl=library-reporting
+      - Api__ReportingServiceUrl=http://library-reporting::50051
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     networks:
@@ -17,6 +17,7 @@ services:
     depends_on:
       - library-reporting
     develop:
+    
       watch:
         - path: ./Library.API/
           action: rebuild

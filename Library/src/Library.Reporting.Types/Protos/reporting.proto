@@ -4,16 +4,11 @@ option csharp_namespace = "Library.Reporting.Types.Protos";
 
 package reporting;
 
-enum ReportTypes {
-    MostBorrowedBooks = 0;
-}
-
 service ReportingService {
     rpc GetReport (GetReportRequest) returns (GetReportResponse);
 }
 
 message GetReportRequest {
-    ReportTypes report_type = 1;
     oneof data {
         MostBorrowedBooksRequest most_borrowed_books_request = 2;
     }

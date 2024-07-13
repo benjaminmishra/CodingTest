@@ -46,12 +46,12 @@
             "dockerBuild": {
                 "tag": "library:dev",
                 "target": "base",
-                "dockerfile": "${workspaceFolder}/src/Library.Reporting/Dockerfile",
+                "dockerfile": "${workspaceFolder}/src/Library.API/Dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },
             "netCore": {
-                "appProject": "${workspaceFolder}/src/Library.Reporting/Library.Reporting.csproj"
+                "appProject": "${workspaceFolder}/src/Library.API/Library.API.csproj"
             }
         },
         {
@@ -62,7 +62,7 @@
             ],
             "dockerBuild": {
                 "tag": "library:latest",
-                "dockerfile": "${workspaceFolder}/src/Library.Reporting/Dockerfile",
+                "dockerfile": "${workspaceFolder}/src/Library.API/Dockerfile",
                 "context": "${workspaceFolder}",
                 "platform": {
                     "os": "linux",
@@ -71,7 +71,7 @@
                 "pull": true
             },
             "netCore": {
-                "appProject": "${workspaceFolder}/src/Library.Reporting/Library.Reporting.csproj"
+                "appProject": "${workspaceFolder}/src/Library.API/Library.API.csproj"
             }
         },
         {
@@ -82,7 +82,7 @@
             ],
             "dockerRun": {},
             "netCore": {
-                "appProject": "${workspaceFolder}/src/Library.Reporting/Library.Reporting.csproj",
+                "appProject": "${workspaceFolder}/src/Library.API/Library.API.csproj",
                 "enableDebugging": true
             }
         },

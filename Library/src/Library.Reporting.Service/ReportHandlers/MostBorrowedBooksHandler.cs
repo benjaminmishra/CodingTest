@@ -3,10 +3,11 @@ using Library.Reporting.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using System.Linq;
+using Library.Reporting.Types.Protos;
 
 namespace Library.Reporting.Service.ReportHandlers;
 
-public class MostBorrowedBookReportHandler : IRequestHandler<MostBorrowedBooksRequest,MostBorrowedBooksResponse>
+public class MostBorrowedBookReportHandler
 {
     private readonly LibraryDbContext _libraryDbContext;
 
@@ -15,16 +16,22 @@ public class MostBorrowedBookReportHandler : IRequestHandler<MostBorrowedBooksRe
         _libraryDbContext = libraryDbContext;
     }
 
-    public async Task<MostBorrowedBooksResponse> Handle(MostBorrowedBooksRequest request, CancellationToken cancellationToken)
+    public async Task<MostBorrowedBooksResponse> ExecuteAsync(MostBorrowedBooksRequest request, CancellationToken cancellationToken)
     {
         var mostBorrowedBooksList = await _libraryDbContext.BorrowedBooks
             .Include(b => b.Book)
             .GroupBy(b => new { b.BookId, b.Book.Title, b.Book.ISBN, b.Book.Author })
             .Take(request.Count)
-            .Select(group => new MostBorrowedBook(group.Key.Title, group.Key.ISBN.Code, group.Key.Author, group.Count()))
-            .OrderByDescending(b => b.TimeBorrowed)
+            .Select(group => new MostBorrowedBook
+            {
+                Title = group.Key.Title,
+                ISBN = group.Key.ISBN.Code,
+                Author = group.Key.Author,
+                CopiesBorrowed = group.Count()
+            })
+            .OrderByDescending(b => b.CopiesBorrowed)
             .ToListAsync(cancellationToken);
 
-        return new MostBorrowedBooksResponse(mostBorrowedBooksList);
+        return new MostBorrowedBooksResponse { MostBorrowedBooks = { mostBorrowedBooksList } };
     }
 }

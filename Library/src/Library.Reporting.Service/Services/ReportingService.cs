@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Google.Protobuf;
 using Grpc.Core;
+using Library.Reporting.DataAccess;
 using Library.Reporting.Service.ReportHandlers;
 using Library.Reporting.Types;
 using Library.Reporting.Types.Protos;
@@ -11,46 +12,23 @@ namespace Library.Reporting.Service;
 
 public class ReportingService : Protos.ReportingService.ReportingServiceBase
 {
-    private readonly IMediator _mediator;
+    private readonly LibraryDbContext _dbContext;
 
-    public ReportingService(IMediator mediator)
+    public ReportingService(LibraryDbContext libraryDbContext)
     {
-        _mediator = mediator;
+        _dbContext = libraryDbContext;
     }
 
     public override async Task<GetReportResponse> GetReport(GetReportRequest request, ServerCallContext context)
     {
-        try
+        switch (request.DataCase)
         {
-            return request.ReportType switch
-            {
-                ReportTypes.MostBorrowedBooks => await _mediator.Send(request.MostBorrowedBooksRequest, context.CancellationToken),
-                _ => new() { Error = new() { Message = "Report Type not recognized" } },
-            };
+            case GetReportRequest.DataOneofCase.MostBorrowedBooksRequest:
+                var handler = new MostBorrowedBookReportHandler(_dbContext);
+                var queryResult = await handler.ExecuteAsync(request.MostBorrowedBooksRequest, context.CancellationToken);
+                return new GetReportResponse { MostBorrowedBooksReponse = queryResult };
+            default:
+                throw new NotImplementedException();
         }
-        catch (Exception ex)
-        {
-            var status = new Status(StatusCode.Internal, ex.Message);
-            throw new RpcException(status);
-        }
-    }
-
-    private async Task<GetReportResponse> ProcessAsync<TRequest, TResponse>(GetReportRequest request, CancellationToken cancellationToken) 
-    where TRequest : IMessage, new()
-    where TResponse : IMessage, new()
-    {
-        var query = await request.DataCase
-        if (query is null)
-            return new() { Error = new() { Message = "Report Type not recognized" } };
-
-        var result = await _mediator.Send(query, cancellationToken);
-        if (result is null)
-            return new() { Error = new() { Message = "Failed to process request" } };
-
-        var resultByteString = await ToByteStringAsync((TResponse)result, cancellationToken);
-        if (resultByteString is null)
-            return new() { Error = new() { Message = "Failed to process response" } };
-
-        return new() { Data = resultByteString };
     }
 }
