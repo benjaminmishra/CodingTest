@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.API", "src\Library.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Reporting.Service", "src\Library.Reporting.Service\Library.Reporting.Service.csproj", "{80BFE0EB-04DE-473B-9EC9-80CFFEA2033D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Reporting.Types", "src\Library.Reporting.Types\Library.Reporting.Types.csproj", "{EF15F948-D116-4CDE-8474-74C3A9D603E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Reporting.Protos", "src\Library.Reporting.Protos\Library.Reporting.Protos.csproj", "{EF15F948-D116-4CDE-8474-74C3A9D603E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

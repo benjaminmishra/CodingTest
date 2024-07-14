@@ -2,8 +2,16 @@ using Library.Reporting.Service;
 using Library.Reporting.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Net;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Listen(IPAddress.Any, 5001, listenOptions=>{
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+});
 
 // Add services to the container.
 builder.Services.Configure<ReportingOptions>(builder.Configuration.GetSection("Reporting"));
@@ -24,6 +32,7 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<LibraryDbContext>();
         await context.Database.MigrateAsync();
+        DataSeeder.SeedBooksData(context);
     }
     catch (Exception ex)
     {
@@ -34,8 +43,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-//
-app.MapGrpcService<Library.Reporting.Service.ReportingService>();
+app.MapGrpcService<ReportingService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 await app.RunAsync();

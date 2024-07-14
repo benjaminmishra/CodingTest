@@ -18,7 +18,7 @@
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.63.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library.Reporting.Types\Library.Reporting.Types.csproj" />
-    <Protobuf Include="..\Library.Reporting.Types\Protos\reporting.proto" GrpcService="Client" Access="public" />
+    <ProjectReference Include="..\Library.Reporting.Protos\Library.Reporting.Protos.csproj" />
+    <Protobuf Include="..\Library.Reporting.Protos\reporting.proto" GrpcService="Client" Access="public" />
   </ItemGroup>
 </Project>

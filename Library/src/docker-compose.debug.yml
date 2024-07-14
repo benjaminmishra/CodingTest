@@ -7,7 +7,7 @@ services:
       args:
         - configuration=Debug
     environment:
-      - Api__ReportingServiceUrl=http://library-reporting::50051
+      - Api__ReportingServiceUrl=http://library-reporting:5001
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     networks:
@@ -33,9 +33,11 @@ services:
     environment:
       - Reporting__LibraryDbConnStr=Server=library-db;Database=LibraryDB;Integrated security=false;User=sa;Password=Your(5tr0ng)Password;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:50051
+      - ASPNETCORE_URLS=http://+:5001
     networks:
       - library-network
+    expose:
+      - 5001
     depends_on:
       - library-db
     develop:

@@ -44,7 +44,7 @@
             "request": "launch",
             "preLaunchTask": "docker-run: debug",
             "netCore": {
-                "appProject": "${workspaceFolder}/src/Library.API/Library.API.csproj"
+                "appProject": "${workspaceFolder}/src/Library.Reporting.Service/Library.Reporting.Service.csproj"
             }
         }
     ]

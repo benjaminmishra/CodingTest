@@ -1,6 +1,6 @@
 @HostAddress = http://localhost:80
 
-GET {{HostAddress}}/Reports/MostBorrowedBooks/5
+GET {{HostAddress}}/Reports/MostBorrowedBooks?top=5
 Accept: application/json
 
 ###

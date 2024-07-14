@@ -11,17 +11,17 @@
     <PackageReference Include="Google.Protobuf" Version="3.25.2" />
     <PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.60.0" />
     <PackageReference Include="Grpc.AspNetCore.Web" Version="2.60.0" />
-    <PackageReference Include="MediatR" Version="12.3.0" />
+    <PackageReference Include="OneOf" Version="3.0.271" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <Protobuf Include="..\Library.Reporting.Types\Protos\reporting.proto" GrpcServices="Server" Access="public" />
+    <Protobuf Include="..\Library.Reporting.Protos\reporting.proto" GrpcServices="Server" Access="public" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Library.Reporting.Types\Library.Reporting.Types.csproj" />
+    <ProjectReference Include="..\Library.Reporting.Protos\Library.Reporting.Protos.csproj" />
   </ItemGroup>
 
   <ItemGroup>

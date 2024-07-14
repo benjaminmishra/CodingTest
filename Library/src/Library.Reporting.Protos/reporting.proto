@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Library.Reporting.Protos";
+
+package reporting;
+
+service ReportingService {
+    rpc GetReport (GetReportRequest) returns (GetReportResponse);
+}
+
+// Main request reponse
+message GetReportRequest {
+    oneof data {
+        MostBorrowedBooksRequest most_borrowed_books_request = 1;
+        BooksStatusRequest book_status_request = 2;
+        MostActiveBorrowersRequest most_active_borrowers_request = 3;
+        UserBorrowedBooksRequest user_borrowed_books_request = 4;
+        OtherBooksBorrowedBySameUsersRequest other_books_borrowed_by_same_users_request = 5;
+        BookReadRateRequest book_read_rate_request = 6;
+    }
+}
+
+message GetReportResponse {
+    oneof data {
+        MostBorrowedBooksResponse most_borrowed_books_reponse = 1;
+        BookStatusResponse book_status_response = 2;
+        MostActiveBorrowersResponse most_active_borrower_response = 3;
+        UserBorrowedBooksResponse user_borrowed_books_response = 4;
+        OtherBooksBorrowedBySameUsersResponse other_books_borrowed_by_same_users_reponse = 5;
+        BookReadRateResponse book_read_rate_response = 6;
+    }
+    optional Error error = 7;
+}
+
+// All report requests
+message MostBorrowedBooksRequest {
+    int32 count = 1;
+}
+
+message BooksStatusRequest {
+    string book_id = 1;
+}
+
+message MostActiveBorrowersRequest {
+    google.protobuf.Timestamp start_date = 1;
+    google.protobuf.Timestamp end_date = 2;
+    int32 count = 3;
+}
+
+message UserBorrowedBooksRequest {
+    string borrower_id = 1;
+    google.protobuf.Timestamp start_date = 2;
+    google.protobuf.Timestamp end_date = 3;
+}
+
+message OtherBooksBorrowedBySameUsersRequest {
+    string book_id = 1;
+}
+
+message BookReadRateRequest {
+    string book_id = 1;
+}
+
+// All responses
+message MostBorrowedBooksResponse {
+    repeated MostBorrowedBook MostBorrowedBooks = 1;
+}
+
+message MostBorrowedBook {
+    string title = 1;
+    string isbn = 2;
+    string author = 3;
+    int32 copies_borrowed = 4;
+}
+
+message BookStatusResponse {
+    string title = 1;
+    int32 total_copies = 2;
+    int32 copies_borrowed = 3;
+    int32 copies_remaining = 4;
+}
+
+message MostActiveBorrowersResponse {
+    repeated MostActiveBorrower borrowers = 1;
+}
+
+message MostActiveBorrower {
+    string borrower_name = 1;
+    int32 books_borrowed = 2;
+}
+
+message UserBorrowedBooksResponse {
+    repeated BorrowedBookInfo books = 1;
+}
+
+message BorrowedBookInfo {
+    string title = 1;
+    string author = 2;
+    google.protobuf.Timestamp borrowed_date = 3;
+    optional google.protobuf.Timestamp returned_date = 4;
+}
+
+message OtherBooksBorrowedBySameUsersResponse {
+    repeated BorrowedBookInfo books = 1;
+}
+
+message BookReadRateResponse {
+    double average_read_rate = 1;
+}
+
+message Error {
+    string message = 1;
+    optional Error inner_error = 2;
+}
