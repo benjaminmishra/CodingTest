@@ -19,4 +19,4 @@ There are two docker compose files
 
 Tests are independent of the above mentioned containers. The tests use a nuget package called `TestContainers` to setup their own environment. So you can just run your docker desktop and then call `dotnet test` in the tests folder. Its important to note that docker desktop needs to be up and running before you run the test.
 
-Right now this project launches a new database (as a container) for every test. That is however not very optimal but for now it works as we get a clean database instace for each test. This is important to make sure there are no race contions and flaky behavior for now. Hence, running tests might require a little bit of time and might hog some memory for a short period of time.
+Right now this project launches a new database (as a container) for every test. That is however not very optimal but for now it works as we get a clean database instace for each test. This is important to make sure there are no race conditions and flaky behavior to deal with. Hence, running tests might require a little bit of time and might hog some memory for a short period of time.
