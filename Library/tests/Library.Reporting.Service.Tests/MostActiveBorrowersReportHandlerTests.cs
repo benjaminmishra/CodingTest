@@ -1,9 +1,11 @@
 ﻿using Library.Reporting.DataAccess;
 using Library.Reporting.Protos;
 using Library.Reporting.Service.ReportHandlers;
+using System.ComponentModel;
 
 namespace Library.Reporting.Service.Tests;
 
+[Category("Integration Tests")]
 public class MostActiveBorrowersReportHandlerTests
 {
     private readonly DbFixture _fixture;

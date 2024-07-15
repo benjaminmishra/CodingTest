@@ -3,9 +3,11 @@ using Library.Reporting.DataAccess;
 using Library.Reporting.Models;
 using Library.Reporting.Protos;
 using Library.Reporting.Service.ReportHandlers;
+using System.ComponentModel;
 
 namespace Library.Reporting.Service.Tests;
 
+[Category("Integration Tests")]
 public class UserBorrowedBooksReportHandlerTests : IDisposable
 {
     private readonly DbFixture _fixture;

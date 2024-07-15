@@ -6,27 +6,27 @@ namespace Library.API;
 
 public static class Endpoints
 {
-    public static IEndpointRouteBuilder RegisterEndpoints(this WebApplication app)
+    public static IEndpointRouteBuilder RegisterReportsEndpoints(this WebApplication app)
     {
-        var routeGroupBuilder = app.MapGroup("/Reports").WithOpenApi();
+        var routeGroupBuilder = app.MapGroup("/reports").WithOpenApi();
 
         routeGroupBuilder
-        .MapGet("/MostBorrowedBooks", GetMostBorrowedBooks);
+        .MapGet("/most-borrowed-books", GetMostBorrowedBooks);
 
         routeGroupBuilder
-        .MapGet("/BookStatus/{bookId:guid}", GetBookStatus);
+        .MapGet("/book-status/{bookId:guid}", GetBookStatus);
 
         routeGroupBuilder
-        .MapGet("/MostActiveBookBorrowers", GetMostActiveBookBorrowers);
+        .MapGet("/most-active-book-borrowers", GetMostActiveBookBorrowers);
 
         routeGroupBuilder
-       .MapGet("/UserBorrowedBooks/{borrowerId:guid}", GetUserBorrowedBooks);
+       .MapGet("/user-borrowed-books/{borrowerId:guid}", GetUserBorrowedBooks);
 
         routeGroupBuilder
-       .MapGet("/OtherBooksBorrowedBySameUsers/{bookId:guid}", GetOtherBooksBorrowedBySameUsers);
+       .MapGet("/other-books-borrowed-by-same-users/{bookId:guid}", GetOtherBooksBorrowedBySameUsers);
 
         routeGroupBuilder
-       .MapGet("/BookReadRate/{bookId:guid}", GetBookReadRate);
+       .MapGet("/book-read-rate/{bookId:guid}", GetBookReadRate);
 
         return app;
     }

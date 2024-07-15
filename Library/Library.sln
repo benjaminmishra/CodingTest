@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Reporting.Service",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Reporting.Protos", "src\Library.Reporting.Protos\Library.Reporting.Protos.csproj", "{EF15F948-D116-4CDE-8474-74C3A9D603E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Reporting.Service.Tests", "tests\Library.Reporting.Service.Tests\Library.Reporting.Service.Tests.csproj", "{6F82D957-9F22-41DD-B6A5-4AAA1757144E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Reporting.Service.Tests", "tests\Library.Reporting.Service.Tests\Library.Reporting.Service.Tests.csproj", "{6F82D957-9F22-41DD-B6A5-4AAA1757144E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{33A25B68-88B3-443A-B453-8BF4957DEB42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,5 +49,9 @@ Global
 		{21171FEE-0E8C-4868-89F2-B19FB9C0F6E2} = {EB8165D5-73D3-4D60-B328-D18886A50FE4}
 		{80BFE0EB-04DE-473B-9EC9-80CFFEA2033D} = {EB8165D5-73D3-4D60-B328-D18886A50FE4}
 		{EF15F948-D116-4CDE-8474-74C3A9D603E2} = {EB8165D5-73D3-4D60-B328-D18886A50FE4}
+		{6F82D957-9F22-41DD-B6A5-4AAA1757144E} = {33A25B68-88B3-443A-B453-8BF4957DEB42}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E70D8661-3BD7-4587-9FC5-2D3FDE31CF0D}
 	EndGlobalSection
 EndGlobal

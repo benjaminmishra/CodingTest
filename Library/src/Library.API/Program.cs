@@ -26,6 +26,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.RegisterEndpoints();
+app.RegisterReportsEndpoints();
 
 await app.RunAsync();

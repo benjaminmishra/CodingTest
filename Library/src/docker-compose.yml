@@ -1,10 +1,13 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
 services:
   library-api:
     build:
-      context: ./Library.API
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./Library.API/Dockerfile
+      args:
+        - configuration=Release
     environment:
-      - Api__ReportingServiceUrl=library-reporting:50051
+      - Api__ReportingServiceUrl=http://library-reporting:5001
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     networks:
@@ -13,27 +16,23 @@ services:
       - "80:80"
     depends_on:
       - library-reporting
-    develop:
-      watch:
-        - path: ./Library.API/
-          action: rebuild
 
   library-reporting:
     build:
-      context: ./Library.Reporting.Service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./Library.Reporting.Service/Dockerfile
+      args:
+        - configuration=Release
     environment:
       - Reporting__LibraryDbConnStr=Server=library-db;Database=LibraryDB;Integrated security=false;User=sa;Password=Your(5tr0ng)Password;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:50051
+      - ASPNETCORE_URLS=http://+:5001
     networks:
       - library-network
+    expose:
+      - 5001
     depends_on:
       - library-db
-    develop:
-      watch:
-        - path: ./Library.Reporting.Service/
-          action: rebuild
 
   library-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
