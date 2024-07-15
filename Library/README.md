@@ -6,7 +6,7 @@ This application has been split into three containers i.e.
 - Library.Reporting.Service
 - mssqlserver-2022
 
-So to run this application it is suffcient to go into src folder and run `docker compose up` . Once that is done the APIs should be accessible on localhost:80.
+So to run this application it is suffcient to go into src folder and run `docker compose up` . Once that is done the APIs should be accessible on http://localhost:80
 Also you can open the swagger (open api) UI via http://localhost/swagger/index.html.
 
 There are two docker compose files
