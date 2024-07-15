@@ -103,8 +103,8 @@ public static class Endpoints
         {
             MostActiveBorrowersRequest = new()
             {
-                StartDate = Timestamp.FromDateTime(startDate),
-                EndDate = Timestamp.FromDateTime(endDate),
+                StartDate = Timestamp.FromDateTime(startDate.ToUniversalTime()),
+                EndDate = Timestamp.FromDateTime(endDate.ToUniversalTime()),
                 Count = count,
             }
         };
