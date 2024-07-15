@@ -1,14 +1,15 @@
-using Library.Reporting.Service;
 using Library.Reporting.DataAccess;
+using Library.Reporting.Service;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Net;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Listen(IPAddress.Any, 5001, listenOptions=>{
+    options.Listen(IPAddress.Any, 5001, listenOptions =>
+    {
         listenOptions.Protocols = HttpProtocols.Http2;
     });
 });
@@ -24,7 +25,7 @@ builder.Services.AddDbContext<LibraryDbContext>((serviceProvider, options) =>
 
 var app = builder.Build();
 
-// Apply migrations at startup
+// Apply migrations at startup, the database needs to be running at this stage
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

@@ -1,4 +1,5 @@
 using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Library.Reporting.Protos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,10 +45,19 @@ public static class Endpoints
             }
         };
 
-        var reportResult = await reportingServiceClient.GetReportAsync(getMostBorrowedBooksRequest, cancellationToken: cancellationToken);
+        GetReportResponse? reportResult;
+        try
+        {
+            reportResult = await reportingServiceClient.GetReportAsync(getMostBorrowedBooksRequest,
+                cancellationToken: cancellationToken);
+        }
+        catch (RpcException ex)
+        {
+            return Results.Problem(detail: ex.Message, statusCode: 500);
+        }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message);
+            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
         return Results.Ok(reportResult.MostBorrowedBooksReponse.MostBorrowedBooks);
     }
@@ -65,10 +75,19 @@ public static class Endpoints
             }
         };
 
-        var reportResult = await reportingServiceClient.GetReportAsync(getBookStatusRequest, cancellationToken: cancellationToken);
+        GetReportResponse? reportResult;
+        try
+        {
+            reportResult = await reportingServiceClient.GetReportAsync(getBookStatusRequest,
+                cancellationToken: cancellationToken);
+        }
+        catch (RpcException ex)
+        {
+            return Results.Problem(detail: ex.Message, statusCode: 500);
+        }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message);
+            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
         return Results.Ok(reportResult.BookStatusResponse);
     }
@@ -90,10 +109,19 @@ public static class Endpoints
             }
         };
 
-        var reportResult = await reportingServiceClient.GetReportAsync(getBookStatusRequest, cancellationToken: cancellationToken);
+        GetReportResponse? reportResult;
+        try
+        {
+            reportResult = await reportingServiceClient.GetReportAsync(getBookStatusRequest,
+                cancellationToken: cancellationToken);
+        }
+        catch (RpcException ex)
+        {
+            return Results.Problem(detail: ex.Message, statusCode: 500);
+        }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message);
+            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
         return Results.Ok(reportResult.MostActiveBorrowerResponse);
     }
@@ -117,10 +145,19 @@ public static class Endpoints
             }
         };
 
-        var reportResult = await reportingServiceClient.GetReportAsync(getUserBorrowedBooksRequest, cancellationToken: cancellationToken);
+        GetReportResponse? reportResult;
+        try
+        {
+            reportResult = await reportingServiceClient.GetReportAsync(getUserBorrowedBooksRequest,
+                cancellationToken: cancellationToken);
+        }
+        catch (RpcException ex)
+        {
+            return Results.Problem(detail: ex.Message, statusCode: 500);
+        }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message);
+            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
         return Results.Ok(reportResult.UserBorrowedBooksResponse);
     }
@@ -138,10 +175,19 @@ public static class Endpoints
             }
         };
 
-        var reportResult = await reportingServiceClient.GetReportAsync(getOtherBooksBorrowedBySameUsersRequest, cancellationToken: cancellationToken);
+        GetReportResponse? reportResult;
+        try
+        {
+            reportResult = await reportingServiceClient.GetReportAsync(getOtherBooksBorrowedBySameUsersRequest,
+                cancellationToken: cancellationToken);
+        }
+        catch (RpcException ex)
+        {
+            return Results.Problem(detail: ex.Message, statusCode: 500);
+        }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message);
+            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
         return Results.Ok(reportResult.OtherBooksBorrowedBySameUsersReponse);
     }
@@ -159,10 +205,19 @@ public static class Endpoints
             }
         };
 
-        var reportResult = await reportingServiceClient.GetReportAsync(getBookReadRateRequest, cancellationToken: cancellationToken);
+        GetReportResponse? reportResult;
+        try
+        {
+            reportResult = await reportingServiceClient.GetReportAsync(getBookReadRateRequest,
+                cancellationToken: cancellationToken);
+        }
+        catch (RpcException ex)
+        {
+            return Results.Problem(detail: ex.Message, statusCode: 500);
+        }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message);
+            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
         return Results.Ok(reportResult.BookReadRateResponse);
     }
