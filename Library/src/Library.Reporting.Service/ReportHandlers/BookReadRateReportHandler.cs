@@ -17,8 +17,11 @@ public class BookReadRateReportHandler
 
     public async Task<OneOf<BookReadRateResponse, Error>> ExecuteAsync(BookReadRateRequest request, CancellationToken cancellationToken)
     {
+        if (!Guid.TryParse(request.BookId, out Guid bookGuid))
+            return new Error { Message = "BookId is an invalid Guid" };
+
         var readRates = await _libraryDbContext.BorrowedBooks
-            .Where(bb => bb.BookId == Guid.Parse(request.BookId) && bb.ReturnedDate != null)
+            .Where(bb => bb.BookId == bookGuid && bb.ReturnedDate != null)
             .Select(bb => new
             {
                 bb.BorrowedDate,
@@ -33,6 +36,6 @@ public class BookReadRateReportHandler
 
         var averageReadRate = readRates.Average(rr => rr.Pages / rr.DaysBorrowed);
 
-        return new BookReadRateResponse { AverageReadRate = averageReadRate };
+        return new BookReadRateResponse { AverageReadRate = Math.Round(averageReadRate, 2) };
     }
 }

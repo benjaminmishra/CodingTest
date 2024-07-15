@@ -16,8 +16,8 @@ namespace Library.Reporting.Service.ReportHandlers
 
         public async Task<OneOf<BookStatusResponse, Error>> ExecuteAsync(BooksStatusRequest request, CancellationToken cancellationToken)
         {
-            if(!Guid.TryParse(request.BookId, out Guid bookGuid))
-                return new Error { Message = "Book Id is an invalid Guid"};
+            if (!Guid.TryParse(request.BookId, out Guid bookGuid))
+                return new Error { Message = "Book Id is an invalid Guid" };
 
             var bookStatus = await _libraryDbContext.Books
                 .Where(b => b.Id == bookGuid)
@@ -25,14 +25,14 @@ namespace Library.Reporting.Service.ReportHandlers
                 {
                     Title = b.Title,
                     TotalCopies = b.CopiesCount,
-                    CopiesBorrowed = _libraryDbContext.BorrowedBooks.Count(bb => bb.BookId == bookGuid && bb.ReturnedDate == null),
-                    CopiesRemaining = b.CopiesCount - _libraryDbContext.BorrowedBooks.Count(bb => bb.BookId == bookGuid && bb.ReturnedDate == null)
+                    CopiesBorrowed = _libraryDbContext.BorrowedBooks.Count(bb => bb.BookId == bookGuid && (bb.ReturnedDate == null || bb.ReturnedDate >= DateTime.UtcNow.Date)),
+                    CopiesRemaining = b.CopiesCount - _libraryDbContext.BorrowedBooks.Count(bb => bb.BookId == bookGuid && (bb.ReturnedDate == null || bb.ReturnedDate >= DateTime.UtcNow.Date))
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if(bookStatus is null)
-                return new Error { Message = "No book found with the given id"};
-            
+            if (bookStatus is null)
+                return new Error { Message = "No book found with the given id" };
+
             return bookStatus;
         }
     }
