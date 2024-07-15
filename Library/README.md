@@ -20,3 +20,9 @@ There are two docker compose files
 Tests are indipendent of the above mentioned containers. The tests use a nuget package called `TestContainers` to setup their own environment. So you can just run your docker desktop and then call `dotnet test` in the tests folder. Its important to note that docker desktop needs to be up and running before you run the test.
 
 Right now this project launches a new database (as a container) for every test. That is however not very optimal but for now it works as we get a clean database instace for each test. This is important to make sure there are no race contions and flaky behavior for now. Hence, running tests might require a little bit of time and might hog some memory for a short period of time.
+
+# DATABASE
+
+You can directly connect to the database via localhost,1433 . There is ef core migrations code embedded into the `Library.Reporting.Service` project that automatically creates the database and seeds data in it. So as long as the mssql server container is running the database will get seeded.
+
+In test however the creation and seeding of the data is done on a per test basis as metioned in the "TESTS" section above.
