@@ -37,7 +37,7 @@ public class UserBorrowedBooksReportHandlerTests : IDisposable
         // Assert
         Assert.IsType<UserBorrowedBooksResponse>(result.Value);
         var response = result.AsT0;
-        Assert.Equal(1, response.Books.Count);
+        Assert.Single(response.Books);
         Assert.Contains(response.Books, b => b.Title == "Test Book 1" && b.Author == "Author 1");
     }
 

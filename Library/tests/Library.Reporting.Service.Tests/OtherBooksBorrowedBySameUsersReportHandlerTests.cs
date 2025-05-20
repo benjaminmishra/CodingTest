@@ -122,7 +122,7 @@ public class OtherBooksBorrowedBySameUsersReportHandlerTests : IDisposable
         // Assert
         Assert.IsType<OtherBooksBorrowedBySameUsersResponse>(result.Value);
         var response = result.AsT0;
-        Assert.Equal(0, response.Books.Count);
+        
         Assert.Empty(response.Books);
     }
 
