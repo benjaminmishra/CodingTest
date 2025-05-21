@@ -24,6 +24,7 @@ services:
       args:
         - configuration=Release
     environment:
+      # TODO: Use a secure store for passwords 
       - Reporting__LibraryDbConnStr=Server=library-db;Database=LibraryDB;Integrated security=false;User=sa;Password=Your(5tr0ng)Password;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5001

@@ -4,7 +4,7 @@ using Grpc.Core;
 using Library.Reporting.Protos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -12,13 +12,12 @@ using Xunit;
 namespace Library.API.Tests;
 
 [Category("Functional Tests")]
-public class ReportEndpointsTests : IDisposable
+public class ReportEndpointsTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
 {
-    private readonly TestServer _server;
     private readonly HttpClient _client;
     private readonly Mock<ReportingService.ReportingServiceClient> _mockReportingClient;
 
-    public ReportEndpointsTests()
+    public ReportEndpointsTests(WebApplicationFactory<Program> factory)
     {
         _mockReportingClient = new Mock<ReportingService.ReportingServiceClient>();
 
@@ -28,8 +27,7 @@ public class ReportEndpointsTests : IDisposable
         var app = builder.Build();
         app.RegisterReportsEndpoints();
 
-        _server = new TestServer(builder.Services.BuildServiceProvider());
-        _client = _server.CreateClient();
+        _client = factory.CreateClient();
     }
 
     [Fact]
@@ -216,7 +214,7 @@ public class ReportEndpointsTests : IDisposable
         var bookId = Guid.NewGuid();
         var expectedResponse = new GetReportResponse
         {
-            Error = new Error { Message = "Book not found" }
+            Error = new () { Message = "Book not found" }
         };
 
         _mockReportingClient
@@ -404,6 +402,5 @@ public class ReportEndpointsTests : IDisposable
     public void Dispose()
     {
         _client?.Dispose();
-        _server?.Dispose();
     }
 }

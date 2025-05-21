@@ -26,3 +26,5 @@ app.UseHttpsRedirection();
 app.RegisterReportsEndpoints();
 
 await app.RunAsync();
+
+public partial class Program { }

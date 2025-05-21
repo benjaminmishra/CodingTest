@@ -26,6 +26,7 @@ builder.Services.AddDbContext<LibraryDbContext>((serviceProvider, options) =>
 var app = builder.Build();
 
 // Apply migrations at startup, the database needs to be running at this stage
+// TODO: Move migrations to its own project in real world scenario
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

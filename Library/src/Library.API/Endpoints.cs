@@ -12,26 +12,26 @@ public static class Endpoints
         var routeGroupBuilder = app.MapGroup("/reports").WithOpenApi();
 
         routeGroupBuilder
-        .MapGet("/most-borrowed-books", GetMostBorrowedBooks);
+            .MapGet("/most-borrowed-books", GetMostBorrowedBooks);
 
         routeGroupBuilder
-        .MapGet("/book-status/{bookId:guid}", GetBookStatus);
+            .MapGet("/book-status/{bookId:guid}", GetBookStatus);
 
         routeGroupBuilder
-        .MapGet("/most-active-book-borrowers", GetMostActiveBookBorrowers);
+            .MapGet("/most-active-book-borrowers", GetMostActiveBookBorrowers);
 
         routeGroupBuilder
-       .MapGet("/user-borrowed-books/{borrowerId:guid}", GetUserBorrowedBooks);
+            .MapGet("/user-borrowed-books/{borrowerId:guid}", GetUserBorrowedBooks);
 
         routeGroupBuilder
-       .MapGet("/other-books-borrowed-by-same-users/{bookId:guid}", GetOtherBooksBorrowedBySameUsers);
+            .MapGet("/other-books-borrowed-by-same-users/{bookId:guid}", GetOtherBooksBorrowedBySameUsers);
 
         routeGroupBuilder
-       .MapGet("/book-read-rate/{bookId:guid}", GetBookReadRate);
+            .MapGet("/book-read-rate/{bookId:guid}", GetBookReadRate);
 
         return app;
     }
-
+    
     public static async Task<IResult> GetMostBorrowedBooks(
         [FromQuery] int top,
         [FromServices] ReportingService.ReportingServiceClient reportingServiceClient,

@@ -7,12 +7,13 @@ namespace Library.Reporting.Service.Tests;
 
 public class DbFixture : IDisposable
 {
-    public LibraryDbContext DbContext { get; set; }
+    public LibraryDbContext DbContext { get; }
 
     private readonly MsSqlContainer _mssqlContainer;
 
     public DbFixture()
     {
+        // TODO: Load password from secret store/ configuration
         _mssqlContainer = new MsSqlBuilder()
             .WithPassword("yourStrong(!)Password")
             .Build();
