@@ -32,7 +32,7 @@ public class ReportEndpointsTests : IClassFixture<ReportingApiWebApplcationFacto
 
         Assert.NotNull(response);
         Assert.Equal(status, response.StatusCode);
-        
+
         if (expectedMessage is not null)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -75,10 +75,10 @@ public class ReportEndpointsTests : IClassFixture<ReportingApiWebApplcationFacto
     {
         var resp = new MostActiveBorrowersResponse();
         resp.Borrowers.Add(
-            new MostActiveBorrower 
-            { 
-                BorrowerName = "U", 
-                BooksBorrowed = 7 
+            new MostActiveBorrower
+            {
+                BorrowerName = "U",
+                BooksBorrowed = 7
             });
 
         var grpcResponse = new GetReportResponse { MostActiveBorrowerResponse = resp };
@@ -96,12 +96,12 @@ public class ReportEndpointsTests : IClassFixture<ReportingApiWebApplcationFacto
     {
         var resp = new UserBorrowedBooksResponse();
         resp.Books.Add(
-            new BorrowedBookInfo 
-            { 
-                Title = "X", 
-                Author = "Y", 
-                BorrowedDate = Timestamp.FromDateTime(DateTime.UtcNow), 
-                ReturnedDate = Timestamp.FromDateTime(DateTime.UtcNow) 
+            new BorrowedBookInfo
+            {
+                Title = "X",
+                Author = "Y",
+                BorrowedDate = Timestamp.FromDateTime(DateTime.UtcNow),
+                ReturnedDate = Timestamp.FromDateTime(DateTime.UtcNow)
             });
         var grpcResponse = new GetReportResponse { UserBorrowedBooksResponse = resp };
 
@@ -118,12 +118,12 @@ public class ReportEndpointsTests : IClassFixture<ReportingApiWebApplcationFacto
     {
         var resp = new OtherBooksBorrowedBySameUsersResponse();
         resp.Books.Add(
-            new BorrowedBookInfo 
-            { 
-                Title = "P", 
-                Author = "Q", 
-                BorrowedDate = Timestamp.FromDateTime(DateTime.UtcNow), 
-                ReturnedDate = Timestamp.FromDateTime(DateTime.UtcNow) 
+            new BorrowedBookInfo
+            {
+                Title = "P",
+                Author = "Q",
+                BorrowedDate = Timestamp.FromDateTime(DateTime.UtcNow),
+                ReturnedDate = Timestamp.FromDateTime(DateTime.UtcNow)
             });
 
         var grpcResponse = new GetReportResponse { OtherBooksBorrowedBySameUsersReponse = resp };

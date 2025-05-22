@@ -4,7 +4,7 @@ WORKDIR /app
 USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG configuration=Debug
-WORKDIR ./src
+WORKDIR /src
 COPY ["./Library.API/Library.API.csproj", "./Library.API/"]
 RUN dotnet restore "./Library.API/Library.API.csproj"
 COPY . .

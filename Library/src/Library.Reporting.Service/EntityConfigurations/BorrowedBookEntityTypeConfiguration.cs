@@ -14,14 +14,14 @@ public class BorrowedBookEntityTypeConfiguration : IEntityTypeConfiguration<Borr
 
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property(x=>x.BorrowedDate).IsRequired();
+        builder.Property(x => x.BorrowedDate).IsRequired();
 
         builder.Property(x => x.ReturnedDate);
 
         builder
         .HasOne(x => x.Book)
-        .WithMany(x=>x.BorrowedCopies)
-        .HasForeignKey(x=>x.BookId)
+        .WithMany(x => x.BorrowedCopies)
+        .HasForeignKey(x => x.BookId)
         .IsRequired();
 
         builder

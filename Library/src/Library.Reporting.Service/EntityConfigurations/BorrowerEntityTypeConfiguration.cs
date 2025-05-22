@@ -14,11 +14,11 @@ public class BorrowerEntityTypeConfiguration : IEntityTypeConfiguration<Borrower
 
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property(x=>x.Name).IsRequired();
+        builder.Property(x => x.Name).IsRequired();
 
         builder
         .HasMany<BorrowedBook>()
-        .WithOne(x=>x.Borrower)
-        .HasForeignKey(x=>x.BorrowerId);
+        .WithOne(x => x.Borrower)
+        .HasForeignKey(x => x.BorrowerId);
     }
 }

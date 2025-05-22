@@ -16,8 +16,8 @@ public class MostBorrowedBookReportHandler
 
     public async Task<OneOf<MostBorrowedBooksResponse, Error>> ExecuteAsync(MostBorrowedBooksRequest request, CancellationToken cancellationToken)
     {
-        if(request.Count <= 0)
-            return new Error { Message = "Count cannot be less than or equal to 0"};
+        if (request.Count <= 0)
+            return new Error { Message = "Count cannot be less than or equal to 0" };
 
         var mostBorrowedBooksList = await _libraryDbContext.BorrowedBooks
             .Include(b => b.Book)

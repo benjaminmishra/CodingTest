@@ -210,7 +210,7 @@ public static class Endpoints
         [FromServices] ReportingService.ReportingServiceClient reportingServiceClient,
         CancellationToken cancellationToken)
     {
-        GetReportRequest getBookReadRateRequest = new ()
+        GetReportRequest getBookReadRateRequest = new()
         {
             BookReadRateRequest = new()
             {

@@ -15,7 +15,7 @@ public class ReportingApiWebApplcationFactory<TProgram> : WebApplicationFactory<
         builder.ConfigureServices(services =>
         {
             // Remove the existing gRPC client if registered
-            var descriptor = services.SingleOrDefault(d =>d.ServiceType == typeof(ReportingService.ReportingServiceClient));
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ReportingService.ReportingServiceClient));
             if (descriptor != null)
             {
                 services.Remove(descriptor);

@@ -37,7 +37,7 @@ public class StarterTests
     #endregion
 
     #region Tests for ReverseBookTitle
-    
+
     [Theory]
     [InlineData("Hello World", "dlroW olleH")]
     [InlineData("Moby Dick", "kciD yboM")]
