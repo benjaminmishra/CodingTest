@@ -1,6 +1,7 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Library.Reporting.Protos;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API;
@@ -31,13 +32,16 @@ public static class Endpoints
 
         return app;
     }
-    
-    public static async Task<IResult> GetMostBorrowedBooks(
+
+    public static async Task<Results<Ok<MostBorrowedBook[]>, ProblemHttpResult, BadRequest>> GetMostBorrowedBooks(
         [FromQuery] int top,
         [FromServices] ReportingService.ReportingServiceClient reportingServiceClient,
         CancellationToken cancellationToken)
     {
-        var getMostBorrowedBooksRequest = new GetReportRequest
+        if (top <= 0)
+            return TypedResults.BadRequest();
+
+        GetReportRequest getMostBorrowedBooksRequest = new()
         {
             MostBorrowedBooksRequest = new()
             {
@@ -53,21 +57,21 @@ public static class Endpoints
         }
         catch (RpcException ex)
         {
-            return Results.Problem(detail: ex.Message, statusCode: 500);
+            return TypedResults.Problem(detail: ex.Message, statusCode: 500);
         }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
+            return TypedResults.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
-        return Results.Ok(reportResult.MostBorrowedBooksReponse.MostBorrowedBooks);
+        return TypedResults.Ok(reportResult.MostBorrowedBooksReponse.MostBorrowedBooks.ToArray());
     }
 
-    public static async Task<IResult> GetBookStatus(
+    public static async Task<Results<Ok<BookStatusResponse>, ProblemHttpResult>> GetBookStatus(
         [FromRoute] Guid bookId,
         [FromServices] ReportingService.ReportingServiceClient reportingServiceClient,
         CancellationToken cancellationToken)
     {
-        var getBookStatusRequest = new GetReportRequest
+        GetReportRequest getBookStatusRequest = new()
         {
             BookStatusRequest = new()
             {
@@ -83,28 +87,37 @@ public static class Endpoints
         }
         catch (RpcException ex)
         {
-            return Results.Problem(detail: ex.Message, statusCode: 500);
+            return TypedResults.Problem(detail: ex.Message, statusCode: 500);
         }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
+            return TypedResults.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
-        return Results.Ok(reportResult.BookStatusResponse);
+        return TypedResults.Ok(reportResult.BookStatusResponse);
     }
 
-    public static async Task<IResult> GetMostActiveBookBorrowers(
+    public static async Task<Results<Ok<MostActiveBorrower[]>, ProblemHttpResult, BadRequest<string>>> GetMostActiveBookBorrowers(
         [FromQuery] DateTime startDate,
         [FromQuery] DateTime endDate,
         [FromQuery] int count,
         [FromServices] ReportingService.ReportingServiceClient reportingServiceClient,
         CancellationToken cancellationToken)
     {
-        var getBookStatusRequest = new GetReportRequest
+        var startDt = Timestamp.FromDateTime(startDate.ToUniversalTime());
+        var endDt = Timestamp.FromDateTime(endDate.ToUniversalTime());
+
+        if (startDate > endDate)
+            return TypedResults.BadRequest("StartDate cannot be greater than end date");
+
+        if (count < 0)
+            return TypedResults.BadRequest("Count cannot be negetive");
+
+        GetReportRequest getBookStatusRequest = new()
         {
             MostActiveBorrowersRequest = new()
             {
-                StartDate = Timestamp.FromDateTime(startDate.ToUniversalTime()),
-                EndDate = Timestamp.FromDateTime(endDate.ToUniversalTime()),
+                StartDate = startDt,
+                EndDate = endDt,
                 Count = count,
             }
         };
@@ -117,16 +130,16 @@ public static class Endpoints
         }
         catch (RpcException ex)
         {
-            return Results.Problem(detail: ex.Message, statusCode: 500);
+            return TypedResults.Problem(detail: ex.Message, statusCode: 500);
         }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
+            return TypedResults.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
-        return Results.Ok(reportResult.MostActiveBorrowerResponse);
+        return TypedResults.Ok(reportResult.MostActiveBorrowerResponse.Borrowers.ToArray());
     }
 
-    public static async Task<IResult> GetUserBorrowedBooks(
+    public static async Task<Results<Ok<BorrowedBookInfo[]>, ProblemHttpResult>> GetUserBorrowedBooks(
         [FromRoute] Guid borrowerId,
         [FromQuery] DateTime startDate,
         [FromQuery] DateTime? endDate,
@@ -135,7 +148,7 @@ public static class Endpoints
     {
         var returnDate = endDate ?? DateTime.Now;
 
-        var getUserBorrowedBooksRequest = new GetReportRequest
+        GetReportRequest getUserBorrowedBooksRequest = new()
         {
             UserBorrowedBooksRequest = new()
             {
@@ -153,21 +166,21 @@ public static class Endpoints
         }
         catch (RpcException ex)
         {
-            return Results.Problem(detail: ex.Message, statusCode: 500);
+            return TypedResults.Problem(detail: ex.Message, statusCode: 500);
         }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
+            return TypedResults.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
-        return Results.Ok(reportResult.UserBorrowedBooksResponse);
+        return TypedResults.Ok(reportResult.UserBorrowedBooksResponse.Books.ToArray());
     }
 
-    public static async Task<IResult> GetOtherBooksBorrowedBySameUsers(
+    public static async Task<Results<Ok<BorrowedBookInfo[]>, ProblemHttpResult>> GetOtherBooksBorrowedBySameUsers(
         [FromRoute] Guid bookId,
         [FromServices] ReportingService.ReportingServiceClient reportingServiceClient,
         CancellationToken cancellationToken)
     {
-        var getOtherBooksBorrowedBySameUsersRequest = new GetReportRequest
+        GetReportRequest getOtherBooksBorrowedBySameUsersRequest = new()
         {
             OtherBooksBorrowedBySameUsersRequest = new()
             {
@@ -183,21 +196,21 @@ public static class Endpoints
         }
         catch (RpcException ex)
         {
-            return Results.Problem(detail: ex.Message, statusCode: 500);
+            return TypedResults.Problem(detail: ex.Message, statusCode: 500);
         }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
+            return TypedResults.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
-        return Results.Ok(reportResult.OtherBooksBorrowedBySameUsersReponse);
+        return TypedResults.Ok(reportResult.OtherBooksBorrowedBySameUsersReponse.Books.ToArray());
     }
 
-    public static async Task<IResult> GetBookReadRate(
+    public static async Task<Results<Ok<BookReadRateResponse>, ProblemHttpResult>> GetBookReadRate(
         [FromRoute] Guid bookId,
         [FromServices] ReportingService.ReportingServiceClient reportingServiceClient,
         CancellationToken cancellationToken)
     {
-        var getBookReadRateRequest = new GetReportRequest
+        GetReportRequest getBookReadRateRequest = new ()
         {
             BookReadRateRequest = new()
             {
@@ -213,12 +226,12 @@ public static class Endpoints
         }
         catch (RpcException ex)
         {
-            return Results.Problem(detail: ex.Message, statusCode: 500);
+            return TypedResults.Problem(detail: ex.Message, statusCode: 500);
         }
 
         if (reportResult.Error is not null)
-            return Results.Problem(detail: reportResult.Error.Message, statusCode: 400);
+            return TypedResults.Problem(detail: reportResult.Error.Message, statusCode: 400);
 
-        return Results.Ok(reportResult.BookReadRateResponse);
+        return TypedResults.Ok(reportResult.BookReadRateResponse);
     }
 }

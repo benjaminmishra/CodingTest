@@ -6,16 +6,32 @@ This application has been split into three containers i.e.
 - Library.Reporting.Service
 - mssqlserver-2022
 
-So to run this application it is suffcient to go into src folder and run `docker compose up` . Once that is done the APIs should be accessible on http://localhost:80
-Also you can open the swagger (open api) UI via http://localhost/swagger/index.html.
+So to run this application it is suffcient to go into src folder and run `docker compose up` . Once that is done the APIs should be accessible on http://localhost:8080
+Also you can open the swagger (open api) UI via http://localhost:8080/swagger/index.html.
 
 There are two docker compose files
 
 - docker-compose.yml - Runs all three containers and sets up the database in release mode.
-- docker-compose.debug.yml -  Can be used to run the containers in debug mode and attachd vsdbg to them for debugging. (There are predefined vs code tasks in tasks.json for this)
+- docker-compose.debug.yml -  Can be used to run the containers in debug mode and attachd vsdbg to them for debugging. (There are predefined vs code tasks in tasks.json)
 
 
 # TESTS
+
+There are two categories of tests in the project i.e. Unit and Integration Tests. You can run all tests at once or you can run each type of tests by its category.
+To run all tests use:
+```bash
+dotnet test
+```
+To run unit tests only use 
+
+```bash
+dotnet test --filter "Category=UnitTests"
+```
+
+To run integration tests use
+```bash
+dotnet test --filter "Category=IntegrationTests"
+```
 
 Tests are independent of the above mentioned containers. The tests use a nuget package called `TestContainers` to setup their own environment. So you can just run your docker desktop and then call `dotnet test` in the tests folder. Its important to note that docker desktop needs to be up and running before you run the test.
 

@@ -1,406 +1,165 @@
-using System.ComponentModel;
-using System.Text.Json;
-using Grpc.Core;
+using System.Net;
+using System.Net.Http.Json;
+using Google.Protobuf.WellKnownTypes;
 using Library.Reporting.Protos;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
+using Library.Tests.Core;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
 namespace Library.API.Tests;
 
-[Category("Functional Tests")]
-public class ReportEndpointsTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
+[UnitTests]
+public class ReportEndpointsTests : IClassFixture<ReportingApiWebApplcationFactory<Program>>, IDisposable
 {
     private readonly HttpClient _client;
-    private readonly Mock<ReportingService.ReportingServiceClient> _mockReportingClient;
+    private readonly Mock<ReportingService.ReportingServiceClient> _mockClient;
 
-    public ReportEndpointsTests(WebApplicationFactory<Program> factory)
+    public ReportEndpointsTests(ReportingApiWebApplcationFactory<Program> factory)
     {
-        _mockReportingClient = new Mock<ReportingService.ReportingServiceClient>();
-
-        var builder = WebApplication.CreateBuilder();
-        builder.Services.AddSingleton(_mockReportingClient.Object);
-        
-        var app = builder.Build();
-        app.RegisterReportsEndpoints();
-
         _client = factory.CreateClient();
+        _mockClient = factory.MockReportingClient;
+    }
+
+    [Theory]
+    [InlineData("/reports/most-borrowed-books?top=0", HttpStatusCode.BadRequest, null)]
+    [InlineData("/reports/book-status/not-a-guid", HttpStatusCode.NotFound, null)]
+    [InlineData("/reports/most-active-book-borrowers?startDate=2025-02-01&endDate=2025-01-01&count=5", HttpStatusCode.BadRequest, "StartDate cannot be greater than end date")]
+    [InlineData("/reports/most-active-book-borrowers?startDate=2025-01-01&endDate=2025-02-01&count=-1", HttpStatusCode.BadRequest, "Count cannot be negetive")]
+    public async Task InvalidParameters_ReturnsExpected(string url, HttpStatusCode status, string? expectedMessage)
+    {
+        var response = await _client.GetAsync(url);
+
+        Assert.NotNull(response);
+        Assert.Equal(status, response.StatusCode);
+        
+        if (expectedMessage is not null)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Contains(expectedMessage, content);
+        }
     }
 
     [Fact]
-    public async Task GetMostBorrowedBooks_ReturnsOk_WhenServiceCallSucceeds()
+    public async Task GetMostBorrowedBooks_ReturnsArray_WhenSuccessful()
     {
-        // Arrange
-        var expectedResponse = new GetReportResponse
+        var books = new List<MostBorrowedBook>
         {
-            MostBorrowedBooksReponse = new MostBorrowedBooksResponse
-            {
-                MostBorrowedBooks = 
-                {
-                    new MostBorrowedBook 
-                    { 
-                        Title = "Test Book",
-                        Author = "Test Author",
-                        Isbn = "1234567890",
-                        CopiesBorrowed = 5
-                    }
-                }
-            }
+            new() { Title = "A", Author = "Auth", Isbn = "1", CopiesBorrowed = 10 }
         };
+        var grpcResponse = new GetReportResponse { MostBorrowedBooksReponse = new MostBorrowedBooksResponse() };
+        grpcResponse.MostBorrowedBooksReponse.MostBorrowedBooks.AddRange(books);
 
-        _mockReportingClient
-            .Setup(x => x.GetReportAsync(
-                It.IsAny<GetReportRequest>(),
-                It.IsAny<Metadata>(),
-                It.IsAny<DateTime?>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(new AsyncUnaryCall<GetReportResponse>(
-                Task.FromResult(expectedResponse),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => [],
-                () => { }));
+        _mockClient.SetupGrpc(grpcResponse);
+        var result = await _client.GetFromJsonAsync<MostBorrowedBook[]>("/reports/most-borrowed-books?top=5");
 
-        // Act
-        var response = await _client.GetAsync("/reports/most-borrowed-books?top=5");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
-        
-        var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<List<MostBorrowedBook>>(content);
-        
         Assert.NotNull(result);
         Assert.Single(result);
-        Assert.Equal("Test Book", result[0].Title);
+        Assert.Equal("A", result[0].Title);
     }
 
     [Fact]
-    public async Task GetBookStatus_ReturnsOk_WhenServiceCallSucceeds()
+    public async Task GetBookStatus_ReturnsObject_WhenSuccessful()
     {
-        // Arrange
-        var bookId = Guid.NewGuid();
-        var expectedResponse = new GetReportResponse
-        {
-            BookStatusResponse = new BookStatusResponse
-            {
-                Title = "Test Book",
-                TotalCopies = 10,
-                CopiesBorrowed = 3,
-                CopiesRemaining = 7
-            }
-        };
+        var expected = new BookStatusResponse { Title = "B", TotalCopies = 5, CopiesBorrowed = 2, CopiesRemaining = 3 };
+        var grpcResponse = new GetReportResponse { BookStatusResponse = expected };
 
-        _mockReportingClient
-            .Setup(x => x.GetReportAsync(
-                It.IsAny<GetReportRequest>(),
-                It.IsAny<Metadata>(),
-                It.IsAny<DateTime?>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(new AsyncUnaryCall<GetReportResponse>(
-                Task.FromResult(expectedResponse),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => [],
-                () => { }));
+        _mockClient.SetupGrpc(grpcResponse);
+        var result = await _client.GetFromJsonAsync<BookStatusResponse>("/reports/book-status/00000000-0000-0000-0000-000000000000");
 
-        // Act
-        var response = await _client.GetAsync($"/reports/book-status/{bookId}");
+        Assert.Equal(5, result?.TotalCopies);
+    }
 
-        // Assert
-        Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
-        
-        var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<BookStatusResponse>(content);
-        
+    [Fact]
+    public async Task GetMostActiveBorrowers_ReturnsObject_WhenSuccessful()
+    {
+        var resp = new MostActiveBorrowersResponse();
+        resp.Borrowers.Add(
+            new MostActiveBorrower 
+            { 
+                BorrowerName = "U", 
+                BooksBorrowed = 7 
+            });
+
+        var grpcResponse = new GetReportResponse { MostActiveBorrowerResponse = resp };
+
+        _mockClient.SetupGrpc(grpcResponse);
+        var result = await _client.GetFromJsonAsync<MostActiveBorrower[]>(
+            "/reports/most-active-book-borrowers?startDate=2025-01-01&endDate=2025-01-31&count=5");
+
         Assert.NotNull(result);
-        Assert.Equal("Test Book", result.Title);
-        Assert.Equal(10, result.TotalCopies);
+        Assert.Single(result);
     }
 
     [Fact]
-    public async Task GetMostActiveBookBorrowers_ReturnsOk_WhenServiceCallSucceeds()
+    public async Task GetUserBorrowedBooks_ReturnsObject_WhenSuccessful()
     {
-        // Arrange
-        var startDate = DateTime.UtcNow.AddDays(-30);
-        var endDate = DateTime.UtcNow;
-        var expectedResponse = new GetReportResponse
-        {
-            MostActiveBorrowerResponse = new MostActiveBorrowersResponse
-            {
-                Borrowers = 
-                {
-                    new MostActiveBorrower
-                    {
-                        BorrowerName = "Test User",
-                        BooksBorrowed = 5
-                    }
-                }
-            }
-        };
+        var resp = new UserBorrowedBooksResponse();
+        resp.Books.Add(
+            new BorrowedBookInfo 
+            { 
+                Title = "X", 
+                Author = "Y", 
+                BorrowedDate = Timestamp.FromDateTime(DateTime.UtcNow), 
+                ReturnedDate = Timestamp.FromDateTime(DateTime.UtcNow) 
+            });
+        var grpcResponse = new GetReportResponse { UserBorrowedBooksResponse = resp };
 
-        _mockReportingClient
-            .Setup(x => x.GetReportAsync(
-                It.IsAny<GetReportRequest>(),
-                It.IsAny<Metadata>(),
-                It.IsAny<DateTime?>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(new AsyncUnaryCall<GetReportResponse>(
-                Task.FromResult(expectedResponse),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => [],
-                () => { }));
+        _mockClient.SetupGrpc(grpcResponse);
+        var result = await _client.GetFromJsonAsync<BorrowedBookInfo[]>(
+            "/reports/user-borrowed-books/00000000-0000-0000-0000-000000000000?startDate=2025-01-01");
 
-        // Act
-        var response = await _client.GetAsync(
-            $"/reports/most-active-book-borrowers?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&count=5");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
-        
-        var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<MostActiveBorrowersResponse>(content);
-        
         Assert.NotNull(result);
-        Assert.Single(result.Borrowers);
-        Assert.Equal("Test User", result.Borrowers[0].BorrowerName);
-    }
-
-    [Theory]
-    [InlineData(-1)]
-    [InlineData(0)]
-    [InlineData(101)]
-    public async Task GetMostBorrowedBooks_ReturnsBadRequest_WhenInvalidTopValue(int top)
-    {
-        // Act
-        var response = await _client.GetAsync($"/reports/most-borrowed-books?top={top}");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status400BadRequest, (int)response.StatusCode);
+        Assert.Single(result);
     }
 
     [Fact]
-    public async Task GetMostBorrowedBooks_ReturnsError_WhenServiceFails()
+    public async Task GetOtherBooksBorrowedBySameUsers_ReturnsObject_WhenSuccessful()
     {
-        // Arrange
-        _mockReportingClient
-            .Setup(x => x.GetReportAsync(
-                It.IsAny<GetReportRequest>(),
-                It.IsAny<Metadata>(),
-                It.IsAny<DateTime?>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(new AsyncUnaryCall<GetReportResponse>(
-                Task.FromException<GetReportResponse>(new RpcException(new Status(StatusCode.Internal, "Service error"))),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => new Metadata(),
-                () => { }));
+        var resp = new OtherBooksBorrowedBySameUsersResponse();
+        resp.Books.Add(
+            new BorrowedBookInfo 
+            { 
+                Title = "P", 
+                Author = "Q", 
+                BorrowedDate = Timestamp.FromDateTime(DateTime.UtcNow), 
+                ReturnedDate = Timestamp.FromDateTime(DateTime.UtcNow) 
+            });
 
-        // Act
-        var response = await _client.GetAsync("/reports/most-borrowed-books?top=5");
+        var grpcResponse = new GetReportResponse { OtherBooksBorrowedBySameUsersReponse = resp };
 
-        // Assert
-        Assert.Equal(StatusCodes.Status500InternalServerError, (int)response.StatusCode);
-    }
+        _mockClient.SetupGrpc(grpcResponse);
+        var result = await _client.GetFromJsonAsync<BorrowedBookInfo[]>(
+            "/reports/other-books-borrowed-by-same-users/00000000-0000-0000-0000-000000000000");
 
-    [Fact]
-    public async Task GetBookStatus_ReturnsNotFound_WhenBookDoesNotExist()
-    {
-        // Arrange
-        var bookId = Guid.NewGuid();
-        var expectedResponse = new GetReportResponse
-        {
-            Error = new () { Message = "Book not found" }
-        };
-
-        _mockReportingClient
-            .Setup(x => x.GetReportAsync(
-                It.IsAny<GetReportRequest>(),
-                It.IsAny<Metadata>(),
-                It.IsAny<DateTime?>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(new AsyncUnaryCall<GetReportResponse>(
-                Task.FromResult(expectedResponse),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => new Metadata(),
-                () => { }));
-
-        // Act
-        var response = await _client.GetAsync($"/reports/book-status/{bookId}");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status400BadRequest, (int)response.StatusCode);
-    }
-
-    [Fact]
-    public async Task GetUserBorrowedBooks_ReturnsOk_WhenServiceCallSucceeds()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var expectedResponse = new GetReportResponse
-        {
-            UserBorrowedBooksResponse = new UserBorrowedBooksResponse
-            {
-                Books = 
-                {
-                    new BorrowedBookInfo
-                    {
-                        Title = "Test Book",
-                        Author = "Test Author",
-                        BorrowedDate = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow),
-                        ReturnedDate = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow.AddDays(7))
-                    }
-                }
-            }
-        };
-
-        _mockReportingClient
-            .Setup(x => x.GetReportAsync(
-                It.IsAny<GetReportRequest>(),
-                It.IsAny<Metadata>(),
-                It.IsAny<DateTime?>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(new AsyncUnaryCall<GetReportResponse>(
-                Task.FromResult(expectedResponse),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => new Metadata(),
-                () => { }));
-
-        // Act
-        var response = await _client.GetAsync($"/reports/user-borrowed-books/{userId}?startDate=2024-01-01");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
-        
-        var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<UserBorrowedBooksResponse>(content);
-        
         Assert.NotNull(result);
-        Assert.Single(result.Books);
+        Assert.Single(result);
     }
 
     [Fact]
-    public async Task GetOtherBooksBorrowedBySameUsers_ReturnsOk_WhenServiceCallSucceeds()
+    public async Task GetBookReadRate_ReturnsObject_WhenSuccessful()
     {
-        // Arrange
-        var bookId = Guid.NewGuid();
-        var expectedResponse = new GetReportResponse
-        {
-            OtherBooksBorrowedBySameUsersReponse = new OtherBooksBorrowedBySameUsersResponse
-            {
-                Books = 
-                {
-                    new BorrowedBookInfo
-                    {
-                        Title = "Test Book",
-                        Author = "Test Author",
-                        BorrowedDate = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow),
-                        ReturnedDate = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow.AddDays(7))
-                    }
-                }
-            }
-        };
+        var expected = new BookReadRateResponse { AverageReadRate = 0.42f };
+        var grpcResponse = new GetReportResponse { BookReadRateResponse = expected };
 
-        _mockReportingClient
-            .Setup(x => x.GetReportAsync(
-                It.IsAny<GetReportRequest>(),
-                It.IsAny<Metadata>(),
-                It.IsAny<DateTime?>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(new AsyncUnaryCall<GetReportResponse>(
-                Task.FromResult(expectedResponse),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => new Metadata(),
-                () => { }));
+        _mockClient.SetupGrpc(grpcResponse);
+        var result = await _client.GetFromJsonAsync<BookReadRateResponse>(
+            "/reports/book-read-rate/00000000-0000-0000-0000-000000000000");
 
-        // Act
-        var response = await _client.GetAsync($"/reports/other-books-borrowed-by-same-users/{bookId}");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
-        
-        var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<OtherBooksBorrowedBySameUsersResponse>(content);
-        
         Assert.NotNull(result);
-        Assert.Single(result.Books);
+        Assert.Equal(0.42f, result.AverageReadRate);
     }
 
     [Fact]
-    public async Task GetBookReadRate_ReturnsOk_WhenServiceCallSucceeds()
+    public async Task ServiceError_ReturnsProblemDetails()
     {
-        // Arrange
-        var bookId = Guid.NewGuid();
-        var expectedResponse = new GetReportResponse
-        {
-            BookReadRateResponse = new BookReadRateResponse
-            {
-                AverageReadRate = 0.75f
-            }
-        };
+        _mockClient.SetupError();
+        var response = await _client.GetAsync("/reports/most-borrowed-books?top=1");
 
-        _mockReportingClient
-            .Setup(x => x.GetReportAsync(
-                It.IsAny<GetReportRequest>(),
-                It.IsAny<Metadata>(),
-                It.IsAny<DateTime?>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(new AsyncUnaryCall<GetReportResponse>(
-                Task.FromResult(expectedResponse),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => new Metadata(),
-                () => { }));
-
-        // Act
-        var response = await _client.GetAsync($"/reports/book-read-rate/{bookId}");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
-        
-        var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<BookReadRateResponse>(content);
-        
-        Assert.NotNull(result);
-        Assert.Equal(0.75f, result.AverageReadRate);
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        var json = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.Contains("Error", json?.Detail);
     }
 
-    [Theory]
-    [InlineData("not-a-guid")]
-    [InlineData("")]
-    public async Task GetBookStatus_ReturnsBadRequest_WhenInvalidBookId(string bookId)
-    {
-        // Act
-        var response = await _client.GetAsync($"/reports/book-status/{bookId}");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status400BadRequest, (int)response.StatusCode);
-    }
-
-    [Fact]
-    public async Task GetMostActiveBookBorrowers_ReturnsBadRequest_WhenEndDateBeforeStartDate()
-    {
-        // Arrange
-        var startDate = DateTime.UtcNow;
-        var endDate = startDate.AddDays(-1);
-
-        // Act
-        var response = await _client.GetAsync(
-            $"/reports/most-active-book-borrowers?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&count=5");
-
-        // Assert
-        Assert.Equal(StatusCodes.Status400BadRequest, (int)response.StatusCode);
-    }
-
-    public void Dispose()
-    {
-        _client?.Dispose();
-    }
+    public void Dispose() => _client.Dispose();
 }

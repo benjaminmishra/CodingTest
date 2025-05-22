@@ -16,7 +16,7 @@ public class ReportingService : Protos.ReportingService.ReportingServiceBase
 
     public override async Task<GetReportResponse> GetReport(GetReportRequest request, ServerCallContext context)
     {
-        // TODO: User mediator patten in real life user cases
+        // TODO: Use mediator patten to dispatch queries to respective handlers
         switch (request.DataCase)
         {
             case GetReportRequest.DataOneofCase.MostBorrowedBooksRequest:
