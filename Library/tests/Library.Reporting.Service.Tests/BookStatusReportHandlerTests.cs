@@ -2,11 +2,11 @@
 using Library.Reporting.Models;
 using Library.Reporting.Protos;
 using Library.Reporting.Service.ReportHandlers;
-using System.ComponentModel;
+using Library.Tests.Core;
 
 namespace Library.Reporting.Service.Tests;
 
-[Category("Integration Tests")]
+[IntegrationTests]
 public class BookStatusReportHandlerTests : IDisposable
 {
     private readonly DbFixture _fixture;

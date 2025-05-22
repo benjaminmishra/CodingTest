@@ -17,7 +17,7 @@ public class BookReadRateReportHandler
 
     public async Task<OneOf<BookReadRateResponse, Error>> ExecuteAsync(BookReadRateRequest request, CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(request.BookId, out Guid bookGuid))
+        if (!Guid.TryParse(request.BookId, out var bookGuid))
             return new Error { Message = "BookId is an invalid Guid" };
 
         var readRates = await _libraryDbContext.BorrowedBooks

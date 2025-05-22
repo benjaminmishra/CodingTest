@@ -2,11 +2,11 @@
 using Library.Reporting.Models;
 using Library.Reporting.Protos;
 using Library.Reporting.Service.ReportHandlers;
-using System.ComponentModel;
+using Library.Tests.Core;
 
 namespace Library.Reporting.Service.Tests;
 
-[Category("Integration Tests")]
+[IntegrationTests]
 public class OtherBooksBorrowedBySameUsersReportHandlerTests : IDisposable
 {
     private readonly DbFixture _fixture;
@@ -122,7 +122,7 @@ public class OtherBooksBorrowedBySameUsersReportHandlerTests : IDisposable
         // Assert
         Assert.IsType<OtherBooksBorrowedBySameUsersResponse>(result.Value);
         var response = result.AsT0;
-        Assert.Equal(0, response.Books.Count);
+
         Assert.Empty(response.Books);
     }
 

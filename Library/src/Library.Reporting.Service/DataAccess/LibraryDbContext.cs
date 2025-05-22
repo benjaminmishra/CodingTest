@@ -6,11 +6,11 @@ namespace Library.Reporting.DataAccess;
 
 public class LibraryDbContext : DbContext
 {
-    public virtual DbSet<Book> Books {get;set;}
-    public virtual DbSet<Borrower> Borrowers {get; set;}
-    public virtual DbSet<BorrowedBook> BorrowedBooks {get; set;}
+    public virtual DbSet<Book> Books { get; set; }
+    public virtual DbSet<Borrower> Borrowers { get; set; }
+    public virtual DbSet<BorrowedBook> BorrowedBooks { get; set; }
 
-    public LibraryDbContext(DbContextOptions<LibraryDbContext> options) :  base(options)
+    public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
     {
     }
 

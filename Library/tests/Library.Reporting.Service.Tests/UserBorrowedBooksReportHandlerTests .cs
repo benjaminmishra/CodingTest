@@ -3,11 +3,11 @@ using Library.Reporting.DataAccess;
 using Library.Reporting.Models;
 using Library.Reporting.Protos;
 using Library.Reporting.Service.ReportHandlers;
-using System.ComponentModel;
+using Library.Tests.Core;
 
 namespace Library.Reporting.Service.Tests;
 
-[Category("Integration Tests")]
+[IntegrationTests]
 public class UserBorrowedBooksReportHandlerTests : IDisposable
 {
     private readonly DbFixture _fixture;
@@ -37,7 +37,7 @@ public class UserBorrowedBooksReportHandlerTests : IDisposable
         // Assert
         Assert.IsType<UserBorrowedBooksResponse>(result.Value);
         var response = result.AsT0;
-        Assert.Equal(1, response.Books.Count);
+        Assert.Single(response.Books);
         Assert.Contains(response.Books, b => b.Title == "Test Book 1" && b.Author == "Author 1");
     }
 

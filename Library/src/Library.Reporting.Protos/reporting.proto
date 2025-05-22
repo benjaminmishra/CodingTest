@@ -10,7 +10,7 @@ service ReportingService {
     rpc GetReport (GetReportRequest) returns (GetReportResponse);
 }
 
-// Main request reponse
+// Main request response
 message GetReportRequest {
     oneof data {
         MostBorrowedBooksRequest most_borrowed_books_request = 1;

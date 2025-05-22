@@ -5,29 +5,29 @@ namespace Starters;
 public static class Starters
 {
     /// <summary>
-    /// Detects whether a number is 2 Power
+    /// Detects whether a book id is Power of 2
     /// </summary>
-    /// <param name="number">Number to test</param>
+    /// <param name="bookId">BookId to test</param>
     /// <returns>True if power of 2 otherwise false</returns>
-    public static bool IsNumber2Power(int number)
+    public static bool IsBookId2Power(int bookId)
     {
-        if (number < 1)
+        if (bookId < 1)
             return false;
 
-        while (number % 2 == 0)
+        while (bookId % 2 == 0)
         {
-            number /= 2;
+            bookId /= 2;
         }
 
-        return number is 1;
+        return bookId is 1;
     }
 
     /// <summary>
-    /// Reverses a string
+    /// Reverses a Book Title
     /// </summary>
-    /// <param name="s">Input string</param>
+    /// <param name="s">Book Title</param>
     /// <returns>Reversed version of the input string</returns>
-    public static string ReverseString(string s)
+    public static string ReverseBookTitle(string s)
     {
         if (s == string.Empty)
             return string.Empty;
@@ -44,22 +44,23 @@ public static class Starters
     }
 
     /// <summary>
-    /// Replicates a given string and returns the concatinated result
+    /// Replicates a given book title and returns the concatenated result
     /// </summary>
-    /// <param name="s">String to replicate</param>
+    /// <param name="s">Book Title to replicate</param>
     /// <param name="n">Number of time replication should happen</param>
-    /// <returns>Replicated string</returns>
+    /// <returns>Replicated book title</returns>
     /// <exception cref="ArgumentException">Throws if n is less than zerp</exception>
-    public static string ReplicateString(string s, int n)
+    public static string ReplicateBookTitle(string s, int n)
     {
-        if( n < 0)
-            throw new ArgumentException($"{nameof(n)} cannot be negetive");
-
-        if (n is 0)
-            return string.Empty;
-
-        if (n is 1)
-            return s;
+        switch (n)
+        {
+            case < 0:
+                throw new ArgumentException($"{nameof(n)} cannot be negative");
+            case 0:
+                return string.Empty;
+            case 1:
+                return s;
+        }
 
         var replicatedStringBuilder = new StringBuilder();
 
@@ -76,7 +77,7 @@ public static class Starters
     /// </summary>
     public static void PrintOddNumberFromZeroToHundred()
     {
-        for (int i = 1; i <= 100; i += 2)
+        for (var i = 1; i <= 100; i += 2)
         {
             Console.WriteLine(i);
         }
