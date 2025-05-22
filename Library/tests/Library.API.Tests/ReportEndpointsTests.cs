@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Library.API.Tests;
 
-[UnitTests]
+[FunctionalTests]
 public class ReportEndpointsTests : IClassFixture<ReportingApiWebApplcationFactory<Program>>, IDisposable
 {
     private readonly HttpClient _client;

@@ -1,45 +1,45 @@
-# HOW TO RUN THIS PROJECT
+# How to Run This Project
 
-This application has been split into three containers i.e.
-
+This application has been split into three containers:
 - Library.API
 - Library.Reporting.Service
 - mssqlserver-2022
 
-So to run this application it is suffcient to go into src folder and run `docker compose up` . Once that is done the APIs should be accessible on http://localhost:8080
-Also you can open the swagger (open api) UI via http://localhost:8080/swagger/index.html.
+To run the project, navigate to the `src` folder and run:
+```bash
+docker compose up
+```
+Once the containers are up, the APIs will be accessible at [http://localhost:8080](http://localhost:8080). You can also access the Swagger (Open API) UI at [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html).
 
-There are two docker compose files
+There are two Docker Compose files:
+- **docker-compose.yml**: Runs all three containers and sets up the database in release mode.
+- **docker-compose.debug.yml**: Runs the containers in debug mode with `vsdbg` attached for debugging. (Predefined VS Code tasks are available in `tasks.json`.)
 
-- docker-compose.yml - Runs all three containers and sets up the database in release mode.
-- docker-compose.debug.yml -  Can be used to run the containers in debug mode and attachd vsdbg to them for debugging. (There are predefined vs code tasks in tasks.json)
+# Tests
 
+The project contains two categories of tests: functional and integration tests. You can run all tests at once or only tests from a specific category.
 
-# TESTS
-
-There are two categories of tests in the project i.e. Unit and Integration Tests. You can run all tests at once or you can run each type of tests by its category.
-To run all tests use:
+To run all tests:
 ```bash
 dotnet test
 ```
-To run unit tests only use 
 
+To run only functional tests:
 ```bash
-dotnet test --filter "Category=UnitTests"
+dotnet test --filter "Category=FunctionalTests"
 ```
 
-To run integration tests use
+To run only integration tests:
 ```bash
 dotnet test --filter "Category=IntegrationTests"
 ```
 
-Tests are independent of the above mentioned containers. The tests use a nuget package called `TestContainers` to setup their own environment. So you can just run your docker desktop and then call `dotnet test` in the tests folder. Its important to note that docker desktop needs to be up and running before you run the test.
+The tests are independent of the main application containers. They use a NuGet package called `TestContainers` to set up their own environment. Ensure that Docker Desktop is running before executing the tests.
 
-Right now this project launches a new database (as a container) for every test. That is however not very optimal but for now it works as we get a clean database instace for each test. This is important to make sure there are no race contions and flaky behavior for now. Hence, running tests might require a little bit of time and might hog some memory for a short period of time.
+Currently, a new database container is launched for per integration test to ensure a clean instance. Although not optimal, this approach prevents race conditions and flaky behavior. Note that running tests may take some time and consume additional memory temporarily.
 
-# DATABASE
+# Database
 
-You can directly connect to the database via localhost,1433 . There is ef core migrations code embedded into the `Library.Reporting.Service` project that automatically creates the database and seeds data in it. So as long as the mssql server container is running the database will get seeded.
+You can connect directly to the database using `localhost,1433`. The `Library.Reporting.Service` project contains EF Core migration code that automatically creates and seeds the database when the MSSQL server container is running.
 
-In test however the creation and seeding of the data is done on a per test basis as metioned in the "TESTS" section above.
-Right now this project launches a new database (as a container) for every test. That is however not very optimal but for now it works as we get a clean database instace for each test. This is important to make sure there are no race conditions and flaky behavior to deal with. Hence, running tests might require a little bit of time and might hog some memory for a short period of time.
+In tests, the creation and seeding of data is performed on a per-test basis as described in the **Tests** section above. Each test launches a new database container, ensuring a clean instance to avoid race conditions and flaky behavior. This process may take some time and temporarily use extra memory.
